@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/mvc
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+    <!--  Use-dafault-filters=”false”的情况下：<context:exclude-filter>指定的不扫描，<context:include-filter>指定的扫描  -->
+    <!-- <context:component-scan base-package="main.com.spring" use-default-filters="false">
+         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"></context:exclude-filter>
+     </context:component-scan>-->
+    <!--只扫描  https://blog.csdn.net/jcxch/article/details/62538896 -->
+    <context:component-scan base-package="com.springmvc">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"></context:exclude-filter>
+    </context:component-scan>
+
+    <!--1、引入配置文件-->
+    <!--方式一-->
+    <!--<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="db.properties"></property>
+    </bean>-->
+    <!--方式二-->
+    <context:property-placeholder location="classpath:properties/jdbc.properties"/>
+    <!--2、设置连接数据库的基本信息-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <!--驱动、连接、用户名称、密码-->
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!-- 3、spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
+        <!-- 自动扫描mapping.xml文件，**表示迭代查找,也可在sqlMapConfig.xml中单独指定xml文件-->
+        <!-- 实体类映射文件路径,这里只有一个就写死了，多个可以使用mybatis/*.xml来替代 -->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+
+    <!--
+    在MapperScannerConfigurer中，我们知道sqlSessionFactory的注入方式有四种，分别是sqlSessionFactory，sqlSessionFactoryBeanName，sqlSessionTemplate，sqlSessionTemplateBeanName,而sqlSessionFactory这种已经过时，所以我们用到的是sqlSessionFactoryBeanName，接下来说说这个的好处，为什么要用到它！
+    -->
+    <!-- 4：配置扫描Dao接口的包，动态实现Dao接口，注入到Spring容器中 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--这里是今天要说的重点-->
+        <!-- 如果只有一个数据源的话可以不用指定，但是如果有多个数据源的话必须要指定 -->
+        <!-- <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" /> -->
+        <!--直接指定了sqlsessionTemplate名称，这个和上面的其实是一样的 -->
+        <!-- <property name="sqlSessionTemplateBeanName" value="sqlSession" /> -->
+
+        <!--
+        作者：QH_JAVA
+        来源：CSDN
+        原文：https://blog.csdn.net/qh_java/article/details/51601139?utm_source=copy
+        版权声明：本文为博主原创文章，转载请附上博文链接！-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <!-- 给出需要扫描的Dao接口包 -->
+        <property name="basePackage" value="com.springmvc.mapper"></property>
+    </bean>
+</beans>

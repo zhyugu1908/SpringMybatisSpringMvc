@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--failed: Cannot resolve classpath entry: C:\Users\pc\Desktop\my file\huxiang-myioc-master\SpringMybtis3\src\main\resources-->
+    <!--数据库连接驱动-->
+    <classPathEntry
+
+            location="D:\Java-connectation\mysql-connector-java-5.1.40.jar"/>
+    <context id="mysqlgenerator" targetRuntime="MyBatis3">
+        <!--防止生成xml文件后，再次运行时追加内容https://blog.csdn.net/zengqiang1/article/details/79381418 -->
+        <plugin type="com.springmvc.test.OverIsMergeablePlugin"/>
+        <commentGenerator>
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
+        <!--<jdbcConnection driverClass="${jdbc.driver}"--> <!--connectionURL="${jdbc.url}"--> <!--userId="${jdbc.username}"--> <!--password="${jdbc.password}">--> <!--</jdbcConnection>-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/school?characterEncoding=UTF-8" userId="root"
+                        password="111111">
+        </jdbcConnection>
+        <!-- 默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer，为 true时把JDBC DECIMAL 和 NUMERIC 类型解析为java.math.BigDecimal -->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <!-- targetProject:生成PO类的位置 -->
+        <javaModelGenerator targetPackage="com.springmvc.entity"
+                            targetProject="src/main">
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="true"/>
+            <!-- 从数据库返回的值被清理前后的空格 -->
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+        <!-- targetProject:mapper映射文件生成的位置 -->
+        <sqlMapGenerator targetPackage="mapper"
+                         targetProject="src\resource">
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true" />
+        </sqlMapGenerator>
+        <!-- targetPackage：mapper接口生成的位置 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.springmvc.mapper"
+                             targetProject="src/main">
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+        <!-- 指定数据库表 -->
+        <table tableName="student" domainObjectName="Student"
+               enableCountByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" enableUpdateByExample="false"
+        ></table>
+        <!-- 有些表的字段需要指定java类型
+        <table schema="" tableName="">
+            <columnOverride column="" javaType="" />
+        </table>
+        -->
+    </context>
+</generatorConfiguration>
+        <!-- -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;
+         作者：专业填坑
+         来源：CSDN
+         原文：https://blog.csdn.net/zk673820543/article/details/52512055?utm_source=copy
+         版权声明：本文为博主原创文章，转载请附上博文链接-->
